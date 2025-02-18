@@ -8,7 +8,7 @@ import subprocess
 
 # Dapatkan path addons dari Blender secara dinamis
 ADDONS_PATH = bpy.utils.user_resource('SCRIPTS', path="addons")
-SAFE_AREA_IMAGE_PATH = os.path.join(ADDONS_PATH, "Raha Tools Menu versi", "safe_area.png")
+SAFE_AREA_IMAGE_PATH = os.path.join(ADDONS_PATH, "Raha_Tools_LAUNCHER", "safe_area.png")
 
 
 
@@ -18,6 +18,17 @@ class RAHA_OT_ActivateHUD(bpy.types.Operator):
     bl_label = "Activate HUD"
 
     def execute(self, context):
+        bpy.ops.object.select_all(action='DESELECT')
+
+        # Loop melalui semua objek di scene dan seleksi yang merupakan kamera
+        for obj in bpy.data.objects:
+            if obj.type == 'CAMERA':
+                obj.select_set(True)
+
+        # Set active object ke kamera pertama yang ditemukan (opsional)
+        cameras = [obj for obj in bpy.data.objects if obj.type == 'CAMERA']
+        if cameras:
+            bpy.context.view_layer.objects.active = cameras[0]
         scene = context.scene
         scene.render.use_stamp = True
         scene.render.use_stamp_note = True
@@ -110,7 +121,7 @@ class VIEW3D_OT_Playblast(bpy.types.Operator):
             scene.frame_start = scene.custom_start_frame
             scene.frame_end = scene.custom_end_frame
         
-        self.switch_workspace("Layout")
+        self.switch_workspace("Animation")
 
         output_path = scene.playblast_output_path
         file_name = scene.playblast_file_name
