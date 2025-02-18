@@ -108,45 +108,35 @@ bpy.types.PoseBone.copy_constraints_influence = bpy.props.FloatProperty(
 #============================================= Panel info ==================================
 class RAHA_OT_InfoPopup(bpy.types.Operator):
     """Menampilkan informasi Raha Tools"""
-    bl_idname = "raha.info_popup"
-    bl_label = "Info"
+    bl_idname = "raha.info_update"
+    bl_label = "Info update"
 
     def execute(self, context):
         def draw_popup(self, context):
             layout = self.layout
             
             col = layout.column()
-            col.label(text="Tools ini dibuat untuk mempermudah animasi di Blender 3D,")
-            col.label(text="meningkatkan efisiensi kerja, dan mendukung kreativitas para animator.")
-            col.separator()
-            col.label(text="Tools ini gratis untuk latihan, proyek personal, dan komersial.")
-            col.label(text="Namun, dilarang menyebarluaskan di luar link resmi serta dilarang")
-            col.label(text="memodifikasi tanpa izin dari Raha Realistis Studio sebagai pemilik resmi.")
-            col.separator()
-            col.label(text="Saat ini, tools ini masih dalam tahap pengembangan dan akan terus diperbarui")
-            col.label(text="dengan fitur-fitur baru. Saya juga memiliki banyak daftar tools lain")
-            col.label(text="yang akan dibagikan secara gratis.")
-            col.separator()
-            col.label(text="Namun, agar proyek ini dapat terus berkembang, saya sangat mengharapkan")
-            col.label(text="donasi dari semua pengguna sebagai modal pengembangan.")
-            col.label(text="Dukungan Anda akan mempercepat pembaruan tools, pembuatan fitur baru,")
-            col.label(text="dan program Free Learning di website saya.")
-            col.separator()
-            col.label(text="Mari bersama membangun ekosistem kreatif ini.")
-            col.label(text="Terima kasih atas apresiasi dan kontribusinya!")
-            
-            col.separator()
-            col.operator("raha.pb_tool", text="How to Use")            
-            col.operator("raha.pb_tool", text="Report A Bug")          
+            col.label(text="Raha Tools v.02")
+            col.separator()            
+            col.label(text="- update menu tools ")
+            col.label(text="- update bug HUB + PB")
+#            col.label(text="Namun, dilarang menyebarluaskan di luar link resmi serta dilarang")
+#            col.label(text="memodifikasi tanpa izin dari Raha Realistis Studio sebagai pemilik resmi.")
+#            col.separator()
+#            col.label(text="Saat ini, tools ini masih dalam tahap pengembangan dan akan terus diperbarui")
+#            col.label(text="dengan fitur-fitur baru. Saya juga memiliki banyak daftar tools lain")
+#            col.label(text="yang akan dibagikan secara gratis.")        
+#            col.separator()
+#            col.operator("raha.pb_tool", text="How to Use")            
+ #           col.operator("raha.pb_tool", text="Report A Bug")          
         
         bpy.context.window_manager.popup_menu(draw_popup, title="Info", icon='INFO')
-        return {'FINISHED'}
-    
+        return {'FINISHED'}    
     
 #=========================================== Panel Run Script ========================================================
 class RAHA_PT_Tools_For_Animation(bpy.types.Panel):
     """Panel tambahan yang muncul setelah Run Tools ditekan"""
-    bl_label = "Raha Tools For Animations"
+    bl_label = "Raha Tools blender 4+"
     bl_idname = "RAHA_PT_For_Animation"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -178,8 +168,8 @@ class RAHA_PT_Tools_For_Animation(bpy.types.Panel):
         # Tombol Info
         row = layout.row()
         row.alignment = 'RIGHT'
-        row.operator("raha.info_popup", text="", icon='ERROR')
-        
+#        row.operator("raha.info_popup", text="WARNIG", icon='ERROR')
+        row.operator("raha.info_update", text="info update", icon='ERROR')        
         # Cek apakah preview tersedia
 
         
