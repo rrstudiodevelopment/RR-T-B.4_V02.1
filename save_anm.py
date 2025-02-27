@@ -222,7 +222,12 @@ def export_bone_keyframe_data(context, filepath):
         file.write("# Mendapatkan scene aktif\n")
         file.write("scene = bpy.context.scene\n\n")
         file.write("# Mendapatkan daftar tulang yang dipilih\n")
-        file.write("selected_bones = [bone.name for bone in bpy.context.selected_pose_bones]\n\n")
+        file.write("selected_pose_bones = bpy.context.selected_pose_bones\n") 
+        file.write("if not selected_pose_bones:\n")
+        file.write("    print('Tidak ada tulang yang dipilih.')\n")  
+        file.write("else:\n") 
+        file.write("    armature_obj = selected_pose_bones[0].id_data\n")    
+        file.write("    selected_bones = [bone.name for bone in selected_pose_bones]\n")                                             
         file.write("# Menyiapkan dictionary untuk menyimpan bone yang cocok\n")
         file.write("matched_bones = {}\n\n")
 
@@ -248,7 +253,7 @@ def export_bone_keyframe_data(context, filepath):
             for bone_name, frames in bone_data.items():
                 if frame in frames:
                     file.write(f"if '{bone_name}' in selected_bones:\n")
-                    file.write(f"    bone = bpy.data.objects['{armature_obj.name}'].pose.bones['{bone_name}']\n")
+                    file.write(f"    bone = armature_obj.pose.bones['{bone_name}']\n")
                     data = frames[frame]
                     for data_path, value in data.items():
                         if data_path == "location":
@@ -290,16 +295,19 @@ def export_bone_keyframe_data(context, filepath):
                                 # Periksa tipe data prop_value
                                 if isinstance(prop_value, int):
                                     # Jika prop_value adalah integer, tulis sebagai integer
-                                    file.write(f'    bone["{prop_name}"] = {prop_value}\n')
+                                    file.write(f'    if "{prop_name}" in bone:\n')                                    
+                                    file.write(f'        bone["{prop_name}"] = {prop_value}\n')
                                 elif isinstance(prop_value, float):
                                     # Jika prop_value adalah float, tulis sebagai float
-                                    file.write(f'    bone["{prop_name}"] = {prop_value:.6f}\n')  # Format dengan 6 angka di belakang koma (atau bisa disesuaikan)
+                                    file.write(f'    if "{prop_name}" in bone:\n')                                    
+                                    file.write(f'        bone["{prop_name}"] = {prop_value:.6f}\n')  # Format dengan 6 angka di belakang koma (atau bisa disesuaikan)
                                 else:
                                     # Tulis tipe data lain (jika ada)
-                                    file.write(f'    bone["{prop_name}"] = {prop_value}\n')
+                                    file.write(f'    if "{prop_name}" in bone:\n')                                    
+                                    file.write(f'        bone["{prop_name}"] = {prop_value}\n')
                                 
                                 # Tambahkan keyframe
-                                file.write(f'    bone.keyframe_insert(data_path=\'["{prop_name}"]\')\n')
+                                file.write(f'        bone.keyframe_insert(data_path=\'["{prop_name}"]\')\n')
 
                                 
             prev_frame = frame
