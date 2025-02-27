@@ -121,7 +121,7 @@ class RAHA_OT_InfoPopup(bpy.types.Operator):
             col.label(text="- update menu tools ")
             col.label(text="- update bug HUB + PB")
             col.label(text="- update fitur save animation")
-            col.label(text="upgrade fitur anti-lag")
+            col.label(text="- upgrade fitur anti-lag")
 #            col.separator()
 #            col.label(text="Saat ini, tools ini masih dalam tahap pengembangan dan akan terus diperbarui")
 #            col.label(text="dengan fitur-fitur baru. Saya juga memiliki banyak daftar tools lain")
@@ -277,7 +277,7 @@ class RAHA_OT_Donate(bpy.types.Operator):
     bl_label = "Donate"
 
     def execute(self, context):
-        webbrowser.open("https://rrstudio2604.wixsite.com/my-site/challenges")
+        webbrowser.open("https://saweria.co/rrstudio26")
         return {'FINISHED'}
 #========================================= Def Subcribe Link ===================================================    
 class RAHA_OT_Subscribe(bpy.types.Operator):
