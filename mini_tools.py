@@ -3,6 +3,30 @@ import bpy
 import webbrowser
 from bpy.props import FloatVectorProperty
 
+#============================================ Anti-Lag ===================================================================
+def update_simplify_subdivision(self, context):
+    context.scene.render.simplify_subdivision = context.scene.simplify_subdivision
+
+def pre_save_handler(dummy):
+    scene = bpy.context.scene
+    
+    # Periksa apakah checkbox "Save Aman" aktif
+    if not scene.get("save_aman", False):
+        return  # Jika tidak aktif, tidak menjalankan script
+    
+    # Cek apakah use_simplify aktif
+    if scene.render.use_simplify:
+        scene.render.use_simplify = False
+        print("Simplify dinonaktifkan sebelum menyimpan.")  
+    
+    # Ubah viewport shading ke wireframe
+    for area in bpy.context.screen.areas:
+        if area.type == 'VIEW_3D':
+            for space in area.spaces:
+                if space.type == 'VIEW_3D':
+                    space.shading.type = 'WIREFRAME'
+                    print("Mode viewport diubah ke wireframe sebelum menyimpan.")
+                    break
 
 # ======================================= override_and_make_local  LINK  =================================================
 
@@ -29,8 +53,26 @@ class OBJECT_OT_OverrideLocal(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        return override_and_make_local(self, context)   
-    
+        return override_and_make_local(self, context)  
+     
+# Tambahkan properti checkbox dan slider di Scene
+bpy.types.Scene.save_aman = bpy.props.BoolProperty(
+    name="Save Aman",
+    description="Aktifkan untuk menjalankan script sebelum menyimpan",
+    default=False
+)
+
+bpy.types.Scene.simplify_subdivision = bpy.props.IntProperty(
+    name="Simplify Subdivision",
+    description="Atur nilai simplify subdivision",
+    default=2,
+    min=0,
+    max=10,
+    update=update_simplify_subdivision
+)
+
+# Mendaftarkan fungsi pre_save_handler ke event penyimpanan
+bpy.app.handlers.save_pre.append(pre_save_handler)    
 #=======================================================================================================================
  # CURSOR SELECTED 
 
@@ -311,9 +353,17 @@ class VIEW3D_PT_MiniTools(bpy.types.Panel):
         layout = self.layout
         wm = context.window_manager   
                 
-        layout.label(text="Tutorial")
-        
-#======================================================================================================        
+        layout.label(text="Anti-lag")
+        scene = context.scene        
+        layout.prop(scene, "save_aman", text="keep it safe")
+        layout.prop(scene.render, "use_simplify", text="use Render Simplify")      
+        # Jika Render Simplify aktif, tampilkan slider untuk subdivision
+        if scene.render.use_simplify:
+            layout.prop(scene, "simplify_subdivision", text="Simplify Subdivision")
+
+#            scene.render.simplify_subdivision = scene.simplify_subdivision          
+#======================================================================================================  
+        layout = self.layout      
         layout.separator()
         layout.label(text="LINK:")
         layout.operator("object.override_local", text="Make & local Ovveride", icon="LINKED")  
@@ -333,6 +383,14 @@ class VIEW3D_PT_MiniTools(bpy.types.Panel):
    
 # Daftar operator dan panel untuk registrasi
 def register():
+    bpy.types.Scene.simplify_subdivision = bpy.props.IntProperty(
+        name="Simplify Subdivision",
+        description="Atur nilai simplify subdivision",
+        default=5,
+        min=0,
+        max=10,
+        update=update_simplify_subdivision
+    )    
     
     
     bpy.utils.register_class(OBJECT_OT_OverrideLocal)
@@ -351,6 +409,7 @@ def register():
         
 # Fungsi untuk menghapus pendaftaran class dari Blender
 def unregister():
+    
     bpy.utils.unregister_class(VIEW3D_PT_MiniTools)  
         
     bpy.utils.unregister_class(OBJECT_OT_OverrideLocal)        
@@ -360,7 +419,9 @@ def unregister():
     bpy.utils.unregister_class(OBJECT_OT_SelectToCursor)
     bpy.utils.unregister_class(OBJECT_OT_AlignTool)
   
-    bpy.utils.unregister_class(OBJECT_OT_CopyRotation)        
+    bpy.utils.unregister_class(OBJECT_OT_CopyRotation)  
+    bpy.utils.unregister_class(SaveAmanPanel)
+    del bpy.types.Scene.simplify_subdivision          
    
     del bpy.types.Scene.capsulman_tools_rotation
 
